@@ -1,49 +1,111 @@
-# localecraft
+<p align="center">
+  <img src="docs/images/logo.png?raw=true" alt="localecraft Logo" width="128" />
+</p>
 
-Context-aware visual software localization engine and layout overflow sentinel. Calculates exact font bounding boxes, validates ICU MessageFormat syntax, and rephrases expanded text within container bounds.
+<h1 align="center">localecraft</h1>
+
+<p align="center">
+  <strong>Context-aware visual software localization engine and layout overflow sentinel.</strong><br />
+  Calculates exact font bounding boxes, validates ICU MessageFormat syntax, and rephrases expanded text within container bounds.
+</p>
+
+<p align="center">
+  <a href="https://github.com/alexandrmotologa/localecraft/actions"><img src="https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat&logo=go" alt="Go Version" /></a>
+  <a href="https://react.dev"><img src="https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react" alt="React 19" /></a>
+  <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind-v4-38B2AC?style=flat&logo=tailwind-css" alt="Tailwind CSS" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat" alt="MIT License" /></a>
+</p>
+
+---
+
+## Interactive Demo
+
+<p align="center">
+  <img src="docs/images/localecraft_demo.gif?raw=true" alt="localecraft Visual Studio Interactive Demo" width="100%" />
+</p>
 
 ## Problem
 
 Software localization frequently produces visual regressions:
-- Text expansion: German and French translations expand by 30% to 45% over English source strings, clipping text or breaking fixed containers.
-- Syntax corruption: Automated machine translation often corrupts ICU MessageFormat brackets or drops placeholder variables, causing client runtime crashes.
-- Missing container context: Strings translated without bounding box metadata produce labels that do not fit their visual target.
+* **Text expansion**: German, French, and Russian translations expand by 30% to 45% over English source strings, clipping text or breaking fixed containers.
+* **Syntax corruption**: Automated translation pipelines frequently corrupt ICU MessageFormat brackets or drop placeholder variables, causing client runtime crashes.
+* **Missing container context**: Strings translated without bounding box metadata produce labels that do not fit their visual target.
 
 ## Features
 
-- **Mathematical Typography Engine**: Computes exact glyph advance widths and bounding box dimensions from OpenType/TrueType font metrics at build time.
-- **Autonomous Rewording Loop**: Iteratively prompts language models under explicit character bounds to produce concise phrasing when target translations overflow UI containers.
-- **Strict ICU MessageFormat Gate**: Verifies syntax balance, argument parity, and Unicode CLDR plural rules across locales.
-- **Codebase Scanner (`localecraft scan`)**: Analyzes React, Vue, Svelte, and HTML codebases to discover translation keys and infer container constraints from Tailwind classes (`w-32`, `max-w-[140px]`).
-- **Pseudo-localization Generator (`localecraft pseudoloc`)**: Transforms source strings into accented text with +30-50% expansion padding to test layout resilience.
-- **Multi-Format Support**: Reads and writes Nested JSON, GNU Gettext (`.po`), Flutter ARB (`.arb`), CSV, and XLIFF 1.2.
-- **Embedded React 19 Studio**: Visual component simulator with real-time boundary markers, RTL mirroring, typography playground, and batch auto-fix workflows.
+* **Mathematical Typography Engine**: Computes exact glyph advance widths and bounding box dimensions from OpenType/TrueType font metrics at build time.
+* **Autonomous Rewording Loop**: Iteratively prompts language models under explicit character bounds to produce concise phrasing when target translations overflow UI containers.
+* **Strict ICU MessageFormat Gate**: Verifies syntax balance, argument parity, and Unicode CLDR plural rules across locales.
+* **Codebase Scanner (`localecraft scan`)**: Analyzes React, Vue, Svelte, and HTML codebases to discover translation keys and infer container constraints from Tailwind classes (`w-32`, `max-w-[140px]`).
+* **Pseudo-localization Generator (`localecraft pseudoloc`)**: Transforms source strings into accented text with +30-50% expansion padding to test layout resilience.
+* **Multi-Format Support**: Reads and writes Nested JSON, GNU Gettext (`.po`), Flutter ARB (`.arb`), CSV, and XLIFF 1.2.
+* **Embedded React 19 Studio**: Visual component simulator with real-time boundary markers, RTL mirroring, typography playground, and batch auto-fix workflows.
+
+## Visual Studio & Responsive Layouts
+
+The embedded web studio provides real-time layout simulation across desktop, tablet, and mobile viewports.
+
+### Desktop Studio
+
+<p align="center">
+  <img src="docs/images/screenshot_desktop.png?raw=true" alt="localecraft Desktop Studio" width="100%" />
+</p>
+
+### Responsive Tablet & Mobile
+
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="55%">
+      <strong>Tablet Layout (768px)</strong><br />
+      <img src="docs/images/screenshot_tablet.png?raw=true" alt="Tablet Layout" width="100%" />
+    </td>
+    <td align="center" width="45%">
+      <strong>Mobile Layout (390px)</strong><br />
+      <img src="docs/images/screenshot_mobile.png?raw=true" alt="Mobile Layout" width="100%" />
+    </td>
+  </tr>
+</table>
+
+### Language Matrix & ICU Syntax Sandbox
+
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="50%">
+      <strong>Language Translation Matrix</strong><br />
+      <img src="docs/images/screenshot_matrix.png?raw=true" alt="Language Matrix" width="100%" />
+    </td>
+    <td align="center" width="50%">
+      <strong>ICU MessageFormat Sandbox</strong><br />
+      <img src="docs/images/screenshot_icu.png?raw=true" alt="ICU Sandbox" width="100%" />
+    </td>
+  </tr>
+</table>
 
 ## Architecture
 
 ```
-Source Files (.json, .po, .arb)
-              │
-              ▼
-   localecraft CLI / Engine
-              │
-      ┌───────┴───────┐
-      ▼               ▼
-Layout Constraints   ICU Syntax Gate
-(Font & Container)   (Brackets & Parity)
-      │               │
-      ▼               │
-Mathematical Typography Engine
-(Glyph advance calculations)
-      │
-      ├───────────────────────────────┐
-      │ (Fits)                        │ (Overflows)
-      ▼                               ▼
-Approved Locale Files          Autonomous Rewording Loop
+Source Files (.json, .po, .arb, .xliff, .csv)
+                    │
+                    ▼
+          localecraft CLI / Engine
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+    Layout Constraints     ICU Syntax Gate
+   (Font & Container)     (Brackets & Parity)
+          │                   │
+          ▼                   │
+   Mathematical Typography Engine
+   (Glyph advance calculations)
+          │
+          ├─────────────────────────────┐
+          │ (Fits)                      │ (Overflows)
+          ▼                             ▼
+   Approved Locale Files       Autonomous Rewording Loop
                                (Character budget feedback)
-                                      │
-                                      ▼
-                               React 19 Studio & PR
+                                        │
+                                        ▼
+                                 React 19 Studio & PR
 ```
 
 ## Quickstart
@@ -173,11 +235,11 @@ ai:
 
 ## Supported Localization Formats
 
-- **Nested and Flat JSON**: dot-separated key hierarchy (`json_nested`)
-- **GNU Gettext**: PO and POT files with context and plurals (`gettext_po`)
-- **Flutter ARB**: Application Resource Bundle files (`flutter_arb`)
-- **Tabular CSV**: Comma-separated values for spreadsheets (`csv`)
-- **XLIFF 1.2**: Standard XML Localization Interchange File Format (`xliff`)
+* **Nested and Flat JSON**: dot-separated key hierarchy (`json_nested`)
+* **GNU Gettext**: PO and POT files with context and plurals (`gettext_po`)
+* **Flutter ARB**: Application Resource Bundle files (`flutter_arb`)
+* **Tabular CSV**: Comma-separated values for spreadsheets (`csv`)
+* **XLIFF 1.2**: Standard XML Localization Interchange File Format (`xliff`)
 
 ## Testing
 
@@ -195,10 +257,10 @@ cd web && npm test || npm run build
 
 ## Documentation
 
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [CLI Reference](docs/CLI_REFERENCE.md)
-- [Configuration Specification](docs/CONFIGURATION.md)
-- [ICU MessageFormat Guide](docs/ICU_GUIDE.md)
+* [Architecture Overview](docs/ARCHITECTURE.md)
+* [CLI Reference](docs/CLI_REFERENCE.md)
+* [Configuration Specification](docs/CONFIGURATION.md)
+* [ICU MessageFormat Guide](docs/ICU_GUIDE.md)
 
 ## License
 

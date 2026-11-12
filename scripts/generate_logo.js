@@ -1,0 +1,206 @@
+const fs = require('fs');
+const path = require('path');
+const { Resvg } = require('@resvg/resvg-js');
+
+function buildLogoSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <clipPath id="squircle-clip">
+      <rect x="24" y="24" width="976" height="976" rx="220" />
+    </clipPath>
+
+    <linearGradient id="cyan-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <linearGradient id="facet-high" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+
+    <linearGradient id="facet-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+
+    <linearGradient id="facet-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <linearGradient id="facet-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#0f172a" flood-opacity="0.14" />
+    </filter>
+  </defs>
+
+  <!-- Luxury White Squircle Container -->
+  <rect x="24" y="24" width="976" height="976" rx="220" fill="#ffffff" stroke="#e2e8f0" stroke-width="6" />
+
+  <g clip-path="url(#squircle-clip)">
+    <g transform="translate(512, 512)" filter="url(#subtle-shadow)">
+
+      <!-- Hexagonal Architectural Gateway -->
+      <polygon points="
+        0,-390
+        338,-195
+        338,195
+        0,390
+        -338,195
+        -338,-195
+      " fill="none" stroke="#0f172a" stroke-width="40" stroke-linejoin="round" />
+
+      <!-- Inner Dashed Precision Cyan Border -->
+      <polygon points="
+        0,-355
+        307,-177
+        307,177
+        0,355
+        -307,177
+        -307,-177
+      " fill="none" stroke="#00f5ff" stroke-width="4" opacity="0.45" stroke-dasharray="16, 12" />
+
+      <!-- Corner Caliper Vernier Ticks (Top & Bottom Gateway Boundaries) -->
+      <line x1="-80" y1="-390" x2="-80" y2="-370" stroke="#00f5ff" stroke-width="3" opacity="0.6" />
+      <line x1="0" y1="-390" x2="0" y2="-365" stroke="#00f5ff" stroke-width="4" opacity="0.8" />
+      <line x1="80" y1="-390" x2="80" y2="-370" stroke="#00f5ff" stroke-width="3" opacity="0.6" />
+
+      <!-- ======================================================== -->
+      <!-- 100% WATERTIGHT SOLID SILHOUETTE BASE (THE CALIPER LYNX) -->
+      <!-- ======================================================== -->
+      <path d="
+        M 0,-150
+        L 90,-180 L 175,-310 L 195,-305 L 190,-190 L 255,-100 L 225,10 L 265,115 L 195,160 L 165,245 L 85,280 L 0,325
+        L -85,280 L -165,245 L -195,160 L -265,115 L -225,10 L -255,-100 L -190,-190 L -195,-305 L -175,-310 L -90,-180
+        Z
+      " fill="#0b0f19" />
+
+      <!-- ======================================================== -->
+      <!-- LOW-POLY MESH FACETS WITH VOLUMETRIC CHIAROSCURO         -->
+      <!-- ======================================================== -->
+
+      <!-- Caliper Ear Tufts (Cyan Accent Measuring Needles) -->
+      <polygon points="175,-310 195,-305 180,-230" fill="url(#cyan-glow)" />
+      <polygon points="-175,-310 -195,-305 -180,-230" fill="url(#cyan-glow)" />
+
+      <!-- Outer Ears -->
+      <polygon points="90,-180 180,-230 190,-190 135,-140" fill="url(#facet-mid)" />
+      <polygon points="-90,-180 -180,-230 -190,-190 -135,-140" fill="url(#facet-dark)" />
+      <polygon points="190,-190 255,-100 165,-95 135,-140" fill="url(#facet-dark)" />
+      <polygon points="-190,-190 -255,-100 -165,-95 -135,-140" fill="url(#facet-mid)" />
+
+      <!-- Inner Ear Cavity -->
+      <polygon points="90,-180 135,-140 85,-100" fill="#1e293b" />
+      <polygon points="-90,-180 -135,-140 -85,-100" fill="#0f172a" />
+
+      <!-- Forehead & Crown Structure -->
+      <polygon points="0,-150 90,-180 85,-100" fill="url(#facet-light)" />
+      <polygon points="0,-150 -90,-180 -85,-100" fill="url(#facet-mid)" />
+      <polygon points="0,-150 85,-100 0,-75" fill="url(#facet-mid)" />
+      <polygon points="0,-150 -85,-100 0,-75" fill="url(#facet-dark)" />
+
+      <!-- Temples -->
+      <polygon points="85,-100 135,-140 165,-95 125,-55" fill="url(#facet-high)" />
+      <polygon points="-85,-100 -135,-140 -165,-95 -125,-55" fill="url(#facet-dark)" />
+      <polygon points="85,-100 125,-55 0,-75" fill="url(#facet-mid)" />
+      <polygon points="-85,-100 -125,-55 0,-75" fill="url(#facet-dark)" />
+
+      <!-- Zygomatic High Cheekbones -->
+      <polygon points="165,-95 255,-100 225,10 155,10" fill="url(#facet-dark)" />
+      <polygon points="-165,-95 -255,-100 -225,10 -155,10" fill="url(#facet-mid)" />
+      <polygon points="125,-55 165,-95 155,10" fill="url(#facet-light)" />
+      <polygon points="-125,-55 -165,-95 -155,10" fill="url(#facet-dark)" />
+
+      <!-- Lower Cheek Ruff Flares -->
+      <polygon points="225,10 265,115 195,160 145,85" fill="url(#facet-mid)" />
+      <polygon points="-225,10 -265,115 -195,160 -145,85" fill="url(#facet-dark)" />
+      <polygon points="155,10 225,10 145,85" fill="url(#facet-dark)" />
+      <polygon points="-155,10 -225,10 -145,85" fill="url(#facet-light)" />
+
+      <!-- Alert Eye Brows (slanted UPWARDS towards the ears in SVG space) -->
+      <polygon points="0,-75 125,-55 110,-35 35,-10" fill="#1e293b" />
+      <polygon points="0,-75 -125,-55 -110,-35 -35,-10" fill="#0f172a" />
+
+      <!-- ============================================== -->
+      <!-- VIGILANT PREDATOR ALMOND EYES (AUTHENTIC CANT) -->
+      <!-- ============================================== -->
+      <!-- Right Eye: Inner at (35,-10), Outer at (110,-35), slanted upward -->
+      <polygon points="35,-10 110,-35 95,-15 45,5" fill="url(#cyan-glow)" />
+      <polygon points="68,-28 78,-20 72,-13 62,-21" fill="#0b0f19" /> <!-- Slit pupil -->
+
+      <!-- Left Eye: Inner at (-35,-10), Outer at (-110,-35), slanted upward -->
+      <polygon points="-35,-10 -110,-35 -95,-15 -45,5" fill="url(#cyan-glow)" />
+      <polygon points="-68,-28 -78,-20 -72,-13 -62,-21" fill="#0b0f19" /> <!-- Slit pupil -->
+
+      <!-- Eye Socket Lower Facets -->
+      <polygon points="45,5 95,-15 155,10 85,45" fill="url(#facet-mid)" />
+      <polygon points="-45,5 -95,-15 -155,10 -85,45" fill="url(#facet-dark)" />
+
+      <!-- Bridge of Nose -->
+      <polygon points="0,-75 35,-10 25,50 0,60" fill="url(#facet-high)" />
+      <polygon points="0,-75 -35,-10 -25,50 0,60" fill="url(#facet-mid)" />
+      <polygon points="35,-10 45,5 25,50" fill="url(#facet-light)" />
+      <polygon points="-35,-10 -45,5 -25,50" fill="url(#facet-dark)" />
+
+      <!-- Compact Obsidian Nose Triangle -->
+      <polygon points="0,60 22,50 16,80 0,88" fill="#0f172a" />
+      <polygon points="0,60 -22,50 -16,80 0,88" fill="#0b0f19" />
+
+      <!-- Lateral Whisker Pads (Muted Slate / Refined Titanium, No Buck Teeth) -->
+      <polygon points="25,50 85,45 75,110 16,80" fill="#475569" />
+      <polygon points="-25,50 -85,45 -75,110 -16,80" fill="#334155" />
+      <polygon points="85,45 145,85 125,145 75,110" fill="url(#facet-mid)" />
+      <polygon points="-85,45 -145,85 -125,145 -75,110" fill="url(#facet-dark)" />
+
+      <!-- Chin & Muzzle Contour -->
+      <polygon points="0,88 16,80 28,150 0,165" fill="#334155" />
+      <polygon points="0,88 -16,80 -28,150 0,165" fill="#1e293b" />
+      <polygon points="16,80 75,110 28,150" fill="#1e293b" />
+      <polygon points="-16,80 -75,110 -28,150" fill="#0f172a" />
+
+      <!-- Lower Jaw & Throat Collar Armor -->
+      <polygon points="0,165 28,150 85,210 0,235" fill="url(#facet-light)" />
+      <polygon points="0,165 -28,150 -85,210 0,235" fill="url(#facet-dark)" />
+      <polygon points="28,150 125,145 165,245 85,210" fill="url(#facet-dark)" />
+      <polygon points="-28,150 -125,145 -165,245 -85,210" fill="url(#facet-mid)" />
+      <polygon points="125,145 195,160 165,245" fill="#0f172a" />
+      <polygon points="-125,145 -195,160 -165,245" fill="#1e293b" />
+
+      <!-- Caliper Chest Armor Chevron (Electric Cyan Boundary Accent) -->
+      <polygon points="0,235 85,210 85,280 0,325" fill="url(#cyan-glow)" opacity="0.95" />
+      <polygon points="0,235 -85,210 -85,280 0,325" fill="url(#cyan-glow)" opacity="0.8" />
+      <polygon points="85,210 165,245 130,295 85,280" fill="#0f172a" />
+      <polygon points="-85,210 -165,245 -130,295 -85,280" fill="#1e293b" />
+
+    </g>
+  </g>
+</svg>`;
+}
+
+async function main() {
+  const outputDir = path.join(__dirname, '..', 'docs', 'images');
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  const svg = buildLogoSvg();
+  const svgPath = path.join(outputDir, 'logo.svg');
+  const pngPath = path.join(outputDir, 'logo.png');
+
+  fs.writeFileSync(svgPath, svg);
+  console.log('✓ Wrote logo.svg');
+
+  const resvg = new Resvg(svg, {
+    fitTo: { mode: 'width', value: 1024 },
+  });
+  const pngData = resvg.render().asPng();
+  fs.writeFileSync(pngPath, pngData);
+  console.log('✓ Rendered logo.png at 1024x1024');
+}
+
+main().catch(console.error);

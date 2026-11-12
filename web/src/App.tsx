@@ -32,6 +32,7 @@ export const App: React.FC = () => {
   const [batchProgress, setBatchProgress] = useState<{ processed: number; total: number; percent: number } | null>(null);
   const [fontSizeDelta, setFontSizeDelta] = useState(0);
   const [paddingDelta, setPaddingDelta] = useState(0);
+  const [mobileView, setMobileView] = useState<'list' | 'preview'>('preview');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -226,14 +227,45 @@ export const App: React.FC = () => {
         </div>
       )}
 
+      {/* Mobile View Toggle Bar */}
+      <div className="md:hidden flex border-b border-slate-800 bg-slate-900/60 p-1.5 text-xs">
+        <button
+          onClick={() => setMobileView('list')}
+          className={`flex-1 py-1.5 rounded text-center font-medium transition ${
+            mobileView === 'list'
+              ? 'bg-slate-800 text-emerald-400 font-semibold'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          Keys ({keys.length})
+        </button>
+        <button
+          onClick={() => setMobileView('preview')}
+          className={`flex-1 py-1.5 rounded text-center font-medium transition ${
+            mobileView === 'preview'
+              ? 'bg-slate-800 text-emerald-400 font-semibold'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          Preview & Controls
+        </button>
+      </div>
+
       {/* Main Workspace Body */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Left Sidebar: Keys List */}
-        <aside className="w-80 md:w-96 flex-shrink-0 h-[calc(100vh-64px)] overflow-hidden">
+        <aside
+          className={`w-full md:w-80 lg:w-96 flex-shrink-0 h-[calc(100vh-64px)] overflow-hidden ${
+            mobileView === 'list' ? 'block' : 'hidden md:block'
+          }`}
+        >
           <KeyList
             keys={keys}
             selectedKey={selectedKey}
-            onSelectKey={setSelectedKey}
+            onSelectKey={(k) => {
+              setSelectedKey(k);
+              setMobileView('preview');
+            }}
             search={search}
             setSearch={setSearch}
             statusFilter={statusFilter}
@@ -242,7 +274,11 @@ export const App: React.FC = () => {
         </aside>
 
         {/* Center / Right Content Canvas */}
-        <section className="flex-1 h-[calc(100vh-64px)] overflow-y-auto p-6 space-y-6">
+        <section
+          className={`flex-1 h-[calc(100vh-64px)] overflow-y-auto p-4 sm:p-6 space-y-6 ${
+            mobileView === 'preview' ? 'block' : 'hidden md:block'
+          }`}
+        >
           {selectedKey ? (
             <>
               {activeTab === 'studio' && (

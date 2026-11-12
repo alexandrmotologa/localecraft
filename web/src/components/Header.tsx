@@ -45,36 +45,36 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex items-center space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs font-medium">
+        <nav className="flex items-center space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs font-medium overflow-x-auto max-w-[200px] sm:max-w-none">
           <button
             onClick={() => setActiveTab('studio')}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-md transition-colors whitespace-nowrap ${
               activeTab === 'studio'
                 ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Studio Canvas
+            Studio
           </button>
           <button
             onClick={() => setActiveTab('matrix')}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-md transition-colors whitespace-nowrap ${
               activeTab === 'matrix'
                 ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Locale Matrix
+            Matrix
           </button>
           <button
             onClick={() => setActiveTab('icu')}
-            className={`px-3 py-1.5 rounded-md transition-colors ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-md transition-colors whitespace-nowrap ${
               activeTab === 'icu'
                 ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            ICU Message Sandbox
+            ICU
           </button>
         </nav>
 
