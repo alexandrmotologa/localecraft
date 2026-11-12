@@ -1,0 +1,12 @@
+{
+  "dashboard": {
+    "inbox_counter": "{count, plural, =0{Keine Aufgaben übrig} one{# Aufgabe übrig} other{# Aufgaben übrig}}"
+  },
+  "nav": {
+    "checkout_btn": "Zur Kasse",
+    "save_btn": "Speichern"
+  },
+  "settings": {
+    "delete_account_confirm": "Konto löschen"
+  }
+}

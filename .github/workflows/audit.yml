@@ -1,0 +1,32 @@
+name: Localization Layout Sentinel
+
+on:
+  pull_request:
+    paths:
+      - 'locales/**'
+      - 'examples/locales/**'
+      - '**/*.po'
+      - '**/*.arb'
+      - 'localecraft.yaml'
+      - 'examples/localecraft.yaml'
+
+jobs:
+  audit:
+    name: Layout Overflow and ICU Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: true
+
+      - name: Build localecraft
+        run: go build -o localecraft ./cmd/localecraft
+
+      - name: Run audit on example catalogs
+        run: ./localecraft audit --config ./examples/localecraft.yaml --strict

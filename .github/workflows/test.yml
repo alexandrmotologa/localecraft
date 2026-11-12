@@ -1,0 +1,43 @@
+name: Tests and Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Unit and Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'web/package.json'
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Build web studio
+        working-directory: web
+        run: npm run build
+
+      - name: Run Go test suite
+        run: go test -v -race ./...
+
+      - name: Build localecraft binary
+        run: go build -o localecraft ./cmd/localecraft

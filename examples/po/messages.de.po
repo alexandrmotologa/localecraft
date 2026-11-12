@@ -1,0 +1,23 @@
+# German translation for LocaleCraft
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: de\n"
+
+#. Checkout button in main navigation
+msgid "Checkout"
+msgstr "Zur Kasse"
+
+#. Toolbar save button
+msgid "Save"
+msgstr "Speichern"
+
+#. Destructive account deletion button
+msgid "Delete Account"
+msgstr "Konto löschen"
+
+#. Task counter message with pluralization
+msgid "One task remaining"
+msgid_plural "%d tasks remaining"
+msgstr[0] "Eine Aufgabe übrig"
+msgstr[1] "%d Aufgaben übrig"

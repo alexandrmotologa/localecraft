@@ -1,0 +1,22 @@
+# Binaries and executables in root
+/localecraft
+/localecraft.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Database and SQLite
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Node.js and Frontend
+web/node_modules/
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db

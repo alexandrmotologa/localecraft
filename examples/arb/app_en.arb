@@ -1,0 +1,25 @@
+{
+  "@@locale": "en",
+  "checkoutButton": "Checkout",
+  "@checkoutButton": {
+    "description": "Primary checkout CTA in top navigation"
+  },
+  "saveButton": "Save",
+  "@saveButton": {
+    "description": "Toolbar save action"
+  },
+  "deleteAccount": "Delete Account",
+  "@deleteAccount": {
+    "description": "Destructive account confirmation"
+  },
+  "inboxCount": "{count, plural, =0{No tasks remaining} one{# task remaining} other{# tasks remaining}}",
+  "@inboxCount": {
+    "description": "Pending task counter",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "example": "3"
+      }
+    }
+  }
+}

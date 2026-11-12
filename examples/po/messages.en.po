@@ -1,0 +1,23 @@
+# GNU gettext source file for LocaleCraft
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+#. Checkout button in main navigation
+msgid "Checkout"
+msgstr "Checkout"
+
+#. Toolbar save button
+msgid "Save"
+msgstr "Save"
+
+#. Destructive account deletion button
+msgid "Delete Account"
+msgstr "Delete Account"
+
+#. Task counter message with pluralization
+msgid "One task remaining"
+msgid_plural "%d tasks remaining"
+msgstr[0] "One task remaining"
+msgstr[1] "%d tasks remaining"

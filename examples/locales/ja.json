@@ -1,0 +1,12 @@
+{
+  "dashboard": {
+    "inbox_counter": "[JA] {count, plural, =0{No tasks remaining} one{# task remaining} other{# tasks remaining}}"
+  },
+  "nav": {
+    "checkout_btn": "お会計へ",
+    "save_btn": "保存する"
+  },
+  "settings": {
+    "delete_account_confirm": "アカウントを完全に削除する"
+  }
+}
