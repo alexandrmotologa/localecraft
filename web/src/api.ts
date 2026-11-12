@@ -75,3 +75,12 @@ export async function triggerPullRequest(branch?: string, title?: string): Promi
   if (!res.ok) throw new Error(`PR creation failed: ${res.statusText}`);
   return res.json();
 }
+
+export async function triggerBatchTranslate(): Promise<{ queued: boolean; tasks: number }> {
+  const res = await fetch(`${BASE_URL}/api/batch-translate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error(`Batch translate failed: ${res.statusText}`);
+  return res.json();
+}

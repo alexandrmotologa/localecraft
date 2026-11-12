@@ -13,6 +13,8 @@ import { KeyList } from './components/KeyList';
 import { ComponentSimulator } from './components/ComponentSimulator';
 import { LanguageMatrix } from './components/LanguageMatrix';
 import { ICUTester } from './components/ICUTester';
+import { TypographyPlayground } from './components/TypographyPlayground';
+import { triggerBatchTranslate } from './api';
 
 export const App: React.FC = () => {
   const [keys, setKeys] = useState<KeyRecord[]>([]);
@@ -26,6 +28,10 @@ export const App: React.FC = () => {
   const [rewordingLocales, setRewordingLocales] = useState<Record<string, boolean>>({});
   const [isExporting, setIsExporting] = useState(false);
   const [isPRing, setIsPRing] = useState(false);
+  const [isBatchFixing, setIsBatchFixing] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ processed: number; total: number; percent: number } | null>(null);
+  const [fontSizeDelta, setFontSizeDelta] = useState(0);
+  const [paddingDelta, setPaddingDelta] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -114,6 +120,21 @@ export const App: React.FC = () => {
       }
     });
 
+    es.addEventListener('batch_progress', (e: MessageEvent) => {
+      try {
+        const payload = JSON.parse(e.data);
+        setBatchProgress(payload);
+        if (payload.processed >= payload.total) {
+          setIsBatchFixing(false);
+          setBatchProgress(null);
+          showToast('Batch auto-fix completed successfully!');
+          loadData();
+        }
+      } catch (err) {
+        console.error('SSE batch progress error:', err);
+      }
+    });
+
     return () => {
       es.close();
     };
@@ -141,6 +162,17 @@ export const App: React.FC = () => {
       await loadData();
     } catch (err: any) {
       showToast(`Failed to save: ${err.message}`);
+    }
+  };
+
+  const handleBatchAutoFix = async () => {
+    setIsBatchFixing(true);
+    try {
+      const res = await triggerBatchTranslate();
+      showToast(`Started autonomous batch fix for ${res.tasks} keys...`);
+    } catch (err: any) {
+      setIsBatchFixing(false);
+      showToast(`Batch fix failed: ${err.message}`);
     }
   };
 
@@ -180,8 +212,11 @@ export const App: React.FC = () => {
         setActiveTab={setActiveTab}
         onExport={handleExport}
         onPR={handlePR}
+        onBatchAutoFix={handleBatchAutoFix}
         isExporting={isExporting}
         isPRing={isPRing}
+        isBatchFixing={isBatchFixing}
+        batchProgress={batchProgress}
       />
 
       {/* Toast Notification */}
@@ -212,6 +247,18 @@ export const App: React.FC = () => {
             <>
               {activeTab === 'studio' && (
                 <div className="space-y-6 max-w-5xl">
+                  <TypographyPlayground
+                    keys={keys}
+                    fontSizeDelta={fontSizeDelta}
+                    setFontSizeDelta={setFontSizeDelta}
+                    paddingDelta={paddingDelta}
+                    setPaddingDelta={setPaddingDelta}
+                    onReset={() => {
+                      setFontSizeDelta(0);
+                      setPaddingDelta(0);
+                    }}
+                  />
+
                   <ComponentSimulator
                     keyRecord={selectedKey}
                     targetLocale={targetLocale}

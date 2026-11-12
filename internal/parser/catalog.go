@@ -75,6 +75,10 @@ func DetectFormat(path string) string {
 		return "gettext_po"
 	case ".arb":
 		return "flutter_arb"
+	case ".csv":
+		return "csv"
+	case ".xlf", ".xliff":
+		return "xliff"
 	case ".json":
 		return "json_nested"
 	default:
@@ -91,6 +95,10 @@ func GetParser(format string) (Parser, error) {
 		return &GettextPOParser{}, nil
 	case "flutter_arb", "arb":
 		return &FlutterARBParser{}, nil
+	case "csv":
+		return &CSVParser{}, nil
+	case "xliff", "xlf":
+		return &XLIFFParser{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported localization format: %s", format)
 	}

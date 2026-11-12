@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeyRecord, TranslationRecord } from '../types';
 import { PixelMeter } from './PixelMeter';
-import { Sparkles, RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Sparkles, RefreshCw, AlertTriangle, CheckCircle, ArrowLeftRight } from 'lucide-react';
 
 interface ComponentSimulatorProps {
   keyRecord: KeyRecord;
@@ -11,6 +11,8 @@ interface ComponentSimulatorProps {
   isRewording: boolean;
 }
 
+const RTL_LOCALES = new Set(['ar', 'he', 'fa', 'ur']);
+
 export const ComponentSimulator: React.FC<ComponentSimulatorProps> = ({
   keyRecord,
   targetLocale,
@@ -19,6 +21,13 @@ export const ComponentSimulator: React.FC<ComponentSimulatorProps> = ({
   isRewording,
 }) => {
   const [componentType, setComponentType] = useState<'button' | 'destructive' | 'pill' | 'card'>('button');
+  const [isRTL, setIsRTL] = useState(false);
+
+  // Auto-detect RTL when target locale changes
+  useEffect(() => {
+    const base = targetLocale.split('-')[0].toLowerCase();
+    setIsRTL(RTL_LOCALES.has(base));
+  }, [targetLocale]);
 
   const currentTranslation: TranslationRecord | undefined = keyRecord.translations[targetLocale];
   const activeText = currentTranslation?.value || keyRecord.source_value;
@@ -44,21 +53,36 @@ export const ComponentSimulator: React.FC<ComponentSimulatorProps> = ({
           </p>
         </div>
 
-        {/* Component Selector */}
-        <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
-          {(['button', 'destructive', 'pill', 'card'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setComponentType(t)}
-              className={`px-2.5 py-1 rounded capitalize transition ${
-                componentType === t
-                  ? 'bg-slate-800 text-emerald-400 font-medium'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+        {/* Component Selector & RTL Toggle */}
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setIsRTL(!isRTL)}
+            className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg border text-xs font-mono transition ${
+              isRTL
+                ? 'bg-sky-500/20 text-sky-400 border-sky-500/40 font-medium'
+                : 'bg-slate-950 text-slate-400 hover:text-slate-200 border-slate-800'
+            }`}
+            title="Toggle Right-to-Left (RTL) Layout"
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5" />
+            <span>RTL</span>
+          </button>
+
+          <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
+            {(['button', 'destructive', 'pill', 'card'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setComponentType(t)}
+                className={`px-2.5 py-1 rounded capitalize transition ${
+                  componentType === t
+                    ? 'bg-slate-800 text-emerald-400 font-medium'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -112,13 +136,15 @@ export const ComponentSimulator: React.FC<ComponentSimulatorProps> = ({
 
         {/* Physical Container Constraint Box */}
         <div
+          dir={isRTL ? 'rtl' : 'ltr'}
           className="relative transition-all flex flex-col items-center"
           style={{ width: `${maxWidth}px` }}
         >
           {/* Top Width Ruler */}
           <div className="w-full flex items-center justify-between text-[10px] font-mono text-slate-500 mb-1 border-b border-dashed border-slate-700 pb-0.5">
-            <span>0px</span>
-            <span className="text-emerald-400 font-semibold">{maxWidth}px max</span>
+            <span>{isRTL ? `${maxWidth}px` : '0px'}</span>
+            <span className="text-emerald-400 font-semibold">{maxWidth}px max {isRTL && '(RTL)'}</span>
+            <span>{isRTL ? '0px' : `${maxWidth}px`}</span>
           </div>
 
           {/* Left / Right Vertical Boundary Markers */}

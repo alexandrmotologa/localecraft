@@ -1,6 +1,6 @@
 # CLI Reference
 
-`localecraft` provides command-line tools for auditing catalogs, calculating font measurements, running autonomous translations, and hosting the embedded visual studio.
+`localecraft` provides command-line tools for auditing catalogs, calculating font measurements, running autonomous translations, scanning codebases, and hosting the embedded visual studio.
 
 ## Commands
 
@@ -16,6 +16,31 @@ localecraft audit --config ./localecraft.yaml --strict
 
 # Output audit report as JSON
 localecraft audit --config ./localecraft.yaml --json
+
+# Generate GitHub-flavored Markdown report
+localecraft audit --config ./localecraft.yaml --markdown-summary ./summary.md
+```
+
+### `localecraft scan`
+Inspects frontend source directories (React, TypeScript, Vue, Svelte, HTML) to discover translation keys (`t('...')`, `<FormattedMessage />`) and infer container constraints from Tailwind classes (`w-32`, `max-w-[140px]`, `text-sm`, `font-semibold`).
+
+```bash
+# Scan components and display discovered constraints
+localecraft scan --dir ./src
+
+# Scan and update localecraft.yaml automatically
+localecraft scan --dir ./src --update-config
+```
+
+### `localecraft pseudoloc`
+Generates pseudo-localized catalogs with accented character transformation and length expansion padding.
+
+```bash
+# Generate default pseudo catalog (+35% expansion)
+localecraft pseudoloc --config ./localecraft.yaml
+
+# Custom expansion factor and output destination
+localecraft pseudoloc --expansion 45 --output ./locales/pseudo.json
 ```
 
 ### `localecraft translate`
@@ -33,6 +58,20 @@ localecraft translate --config ./localecraft.yaml --key nav.checkout_btn
 
 # Override AI provider at runtime
 localecraft translate --config ./localecraft.yaml --provider gemini --api-key "$GEMINI_API_KEY"
+```
+
+### `localecraft export` & `localecraft import`
+Export and import localization catalogs to and from standard tabular (CSV) or CAT industry (XLIFF 1.2) formats.
+
+```bash
+# Export German catalog to CSV
+localecraft export --format csv --locale de --output ./translations_de.csv
+
+# Export French catalog to XLIFF
+localecraft export --format xliff --locale fr --output ./messages_fr.xlf
+
+# Import translated CSV back into project catalog
+localecraft import --input ./translations_de.csv --locale de
 ```
 
 ### `localecraft measure`

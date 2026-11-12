@@ -9,14 +9,15 @@ Software localization frequently produces visual regressions:
 - Syntax corruption: Automated machine translation often corrupts ICU MessageFormat brackets or drops placeholder variables, causing client runtime crashes.
 - Missing container context: Strings translated without bounding box metadata produce labels that do not fit their visual target.
 
-## Solution
+## Features
 
-`localecraft` couples semantic localization with physical typography calculations:
-- Calculates rendered pixel widths directly from font metrics (OpenType and TrueType) at build time.
-- Compares text length against container limits defined in `localecraft.yaml`.
-- Iteratively rephrases overflowing translations into concise synonyms under strict character bounds.
-- Validates variable parity and CLDR plural category compliance for ICU MessageFormat.
-- Includes a terminal auditing tool for CI/CD gates and an embedded React 19 visual studio.
+- **Mathematical Typography Engine**: Computes exact glyph advance widths and bounding box dimensions from OpenType/TrueType font metrics at build time.
+- **Autonomous Rewording Loop**: Iteratively prompts language models under explicit character bounds to produce concise phrasing when target translations overflow UI containers.
+- **Strict ICU MessageFormat Gate**: Verifies syntax balance, argument parity, and Unicode CLDR plural rules across locales.
+- **Codebase Scanner (`localecraft scan`)**: Analyzes React, Vue, Svelte, and HTML codebases to discover translation keys and infer container constraints from Tailwind classes (`w-32`, `max-w-[140px]`).
+- **Pseudo-localization Generator (`localecraft pseudoloc`)**: Transforms source strings into accented text with +30-50% expansion padding to test layout resilience.
+- **Multi-Format Support**: Reads and writes Nested JSON, GNU Gettext (`.po`), Flutter ARB (`.arb`), CSV, and XLIFF 1.2.
+- **Embedded React 19 Studio**: Visual component simulator with real-time boundary markers, RTL mirroring, typography playground, and batch auto-fix workflows.
 
 ## Architecture
 
@@ -88,7 +89,19 @@ To run in CI and return exit code 1 on errors:
 ./localecraft audit --config ./examples/localecraft.yaml --strict
 ```
 
-### 4. Autonomous Translation and Shortening
+### 4. Scan Frontend Codebase for Constraints
+
+```bash
+./localecraft scan --dir ./src --update-config
+```
+
+### 5. Generate Pseudo-localization for Layout Testing
+
+```bash
+./localecraft pseudoloc --config ./examples/localecraft.yaml --expansion 40
+```
+
+### 6. Autonomous Translation and Shortening
 
 ```bash
 ./localecraft translate --config ./examples/localecraft.yaml
@@ -96,7 +109,14 @@ To run in CI and return exit code 1 on errors:
 
 The optimizer detects overflow on long strings and compresses them to fit within container limits.
 
-### 5. Launch Embedded Visual Studio
+### 7. Export and Import for External Translators
+
+```bash
+./localecraft export --format csv --locale de --output ./translations_de.csv
+./localecraft import --input ./translations_de.csv --locale de
+```
+
+### 8. Launch Embedded Visual Studio
 
 ```bash
 ./localecraft serve --config ./examples/localecraft.yaml --port 8080
@@ -156,6 +176,8 @@ ai:
 - **Nested and Flat JSON**: dot-separated key hierarchy (`json_nested`)
 - **GNU Gettext**: PO and POT files with context and plurals (`gettext_po`)
 - **Flutter ARB**: Application Resource Bundle files (`flutter_arb`)
+- **Tabular CSV**: Comma-separated values for spreadsheets (`csv`)
+- **XLIFF 1.2**: Standard XML Localization Interchange File Format (`xliff`)
 
 ## Testing
 

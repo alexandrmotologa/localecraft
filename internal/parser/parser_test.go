@@ -159,6 +159,81 @@ func TestFlutterARBParser(t *testing.T) {
 	}
 }
 
+func TestCSVParser(t *testing.T) {
+	csvData := `Key,Target,Context,Comment
+nav.save,Speichern,toolbar,Save button
+nav.cancel,Abbrechen,toolbar,Cancel button
+`
+	p, err := parser.GetParser("csv")
+	if err != nil {
+		t.Fatalf("get csv parser: %v", err)
+	}
+
+	cat, err := p.ParseBytes([]byte(csvData), "de")
+	if err != nil {
+		t.Fatalf("parse csv: %v", err)
+	}
+
+	if len(cat.Entries) != 2 {
+		t.Fatalf("expected 2 entries, got %d", len(cat.Entries))
+	}
+
+	e, ok := cat.Get("nav.save")
+	if !ok || e.Value != "Speichern" || e.Context != "toolbar" {
+		t.Fatalf("unexpected entry: %v", e)
+	}
+
+	serialized, err := p.Serialize(cat)
+	if err != nil {
+		t.Fatalf("serialize csv: %v", err)
+	}
+	if !strings.Contains(string(serialized), "nav.save,Speichern,toolbar,Save button") {
+		t.Fatalf("serialized csv missing row: %s", string(serialized))
+	}
+}
+
+func TestXLIFFParser(t *testing.T) {
+	xliffData := `<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="locales/en.json">
+    <body>
+      <trans-unit id="nav.checkout">
+        <source>Checkout</source>
+        <target>Zur Kasse</target>
+        <note>Primary action</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>`
+
+	p, err := parser.GetParser("xliff")
+	if err != nil {
+		t.Fatalf("get xliff parser: %v", err)
+	}
+
+	cat, err := p.ParseBytes([]byte(xliffData), "de")
+	if err != nil {
+		t.Fatalf("parse xliff: %v", err)
+	}
+
+	if len(cat.Entries) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(cat.Entries))
+	}
+
+	e, ok := cat.Get("nav.checkout")
+	if !ok || e.Value != "Zur Kasse" || e.Comment != "Primary action" {
+		t.Fatalf("unexpected xliff entry: %v", e)
+	}
+
+	serialized, err := p.Serialize(cat)
+	if err != nil {
+		t.Fatalf("serialize xliff: %v", err)
+	}
+	if !strings.Contains(string(serialized), `<trans-unit id="nav.checkout">`) {
+		t.Fatalf("serialized xliff missing trans-unit: %s", string(serialized))
+	}
+}
+
 func TestDetectFormat(t *testing.T) {
 	cases := []struct {
 		path     string

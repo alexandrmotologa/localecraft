@@ -1,6 +1,6 @@
 import React from 'react';
 import { StoreSummary } from '../types';
-import { Globe, GitPullRequest, Download, AlertTriangle, CheckCircle, HelpCircle } from 'lucide-react';
+import { Globe, GitPullRequest, Download, AlertTriangle, CheckCircle, HelpCircle, Sparkles, RefreshCw } from 'lucide-react';
 
 interface HeaderProps {
   summary: StoreSummary | null;
@@ -8,8 +8,11 @@ interface HeaderProps {
   setActiveTab: (tab: 'studio' | 'matrix' | 'icu' | 'config') => void;
   onExport: () => void;
   onPR: () => void;
+  onBatchAutoFix: () => void;
   isExporting: boolean;
   isPRing: boolean;
+  isBatchFixing: boolean;
+  batchProgress?: { processed: number; total: number; percent: number } | null;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,8 +21,11 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveTab,
   onExport,
   onPR,
+  onBatchAutoFix,
   isExporting,
   isPRing,
+  isBatchFixing,
+  batchProgress,
 }) => {
   return (
     <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
@@ -93,6 +99,27 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </div>
+          )}
+
+          {summary && summary.total_overflows > 0 && (
+            <button
+              onClick={onBatchAutoFix}
+              disabled={isBatchFixing}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white shadow-sm transition disabled:opacity-50"
+              title="Automatically reword all overflowing keys across all languages"
+            >
+              {isBatchFixing ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Fixing {batchProgress ? `${batchProgress.processed}/${batchProgress.total}` : '...'}</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Auto-Fix All Overflows ({summary.total_overflows})</span>
+                </>
+              )}
+            </button>
           )}
 
           <button

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -55,6 +56,7 @@ func (s *Server) Router() http.Handler {
 	mux.HandleFunc("GET /api/keys", s.handleListKeys)
 	mux.HandleFunc("POST /api/measure", s.handleMeasure)
 	mux.HandleFunc("POST /api/translate", s.handleTranslate)
+	mux.HandleFunc("POST /api/batch-translate", s.handleBatchTranslate)
 	mux.HandleFunc("POST /api/save-translation", s.handleSaveTranslation)
 	mux.HandleFunc("POST /api/export", s.handleExport)
 	mux.HandleFunc("POST /api/pr", s.handleCreatePR)
@@ -302,6 +304,101 @@ func (s *Server) handleTranslate(w http.ResponseWriter, r *http.Request) {
 	})
 
 	writeJSON(w, http.StatusOK, optRes)
+}
+
+func (s *Server) handleBatchTranslate(w http.ResponseWriter, r *http.Request) {
+	keys, err := s.db.ListKeys("", "")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Identify targets needing work (OVERFLOW or MISSING)
+	type task struct {
+		keyName string
+		locale  string
+	}
+	var tasks []task
+
+	for _, k := range keys {
+		for loc, tr := range k.Translations {
+			if tr.Status == "OVERFLOW" || tr.Status == "MISSING" {
+				tasks = append(tasks, task{keyName: k.KeyName, locale: loc})
+			}
+		}
+	}
+
+	totalTasks := len(tasks)
+	processedCount := 0
+
+	go func() {
+		for _, t := range tasks {
+			srcEntry, ok := s.sourceCat.Get(t.keyName)
+			if !ok {
+				continue
+			}
+
+			constraint := s.cfg.GetKeyConstraint(t.keyName)
+			glossary := make(map[string]string)
+			for _, gt := range s.cfg.Glossary {
+				if val, exists := gt.Translations[t.locale]; exists {
+					glossary[gt.Term] = val
+				}
+			}
+
+			optRes, err := s.optimizer.Optimize(context.Background(), agent.OptimizeRequest{
+				Key:           t.keyName,
+				SourceText:    srcEntry.Value,
+				SourceLocale:  s.sourceCat.Locale,
+				TargetLocale:  t.locale,
+				Context:       constraint.Context,
+				Constraint:    constraint,
+				Glossary:      glossary,
+				MaxIterations: 4,
+			})
+			if err == nil {
+				status := "ACCEPTED"
+				if optRes.FinalMeasure.IsOverflow {
+					status = "OVERFLOW"
+				}
+				if optRes.Status == "ICU_SYNTAX_ERROR" {
+					status = "ICU_ERROR"
+				}
+
+				if cat, exists := s.targetCats[t.locale]; exists {
+					cat.Set(&parser.Entry{
+						Key:   t.keyName,
+						Value: optRes.FinalTranslation,
+					})
+				}
+
+				_ = s.db.SaveTranslation(t.keyName, t.locale, optRes.FinalTranslation, status, optRes.FinalMeasure, optRes.IterationsUsed)
+
+				s.broadcastEvent("translation_updated", map[string]any{
+					"key":         t.keyName,
+					"locale":      t.locale,
+					"translation": optRes.FinalTranslation,
+					"status":      status,
+					"measure":     optRes.FinalMeasure,
+					"iterations":  optRes.IterationsUsed,
+				})
+			}
+
+			processedCount++
+			s.broadcastEvent("batch_progress", map[string]any{
+				"current_key": t.keyName,
+				"locale":      t.locale,
+				"processed":   processedCount,
+				"total":       totalTasks,
+				"percent":     int(float64(processedCount) / float64(totalTasks) * 100),
+			})
+		}
+	}()
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"queued": true,
+		"tasks":  totalTasks,
+	})
 }
 
 type saveTransReqBody struct {
